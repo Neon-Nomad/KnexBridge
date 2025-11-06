@@ -15,29 +15,29 @@ export class Logger {
   }
 
   info(message: string): void {
-    console.log(chalk.blue('ℹ'), message);
+    console.log(chalk.blue('[i]'), message);
   }
 
   success(message: string): void {
-    console.log(chalk.green('✅'), message);
+    console.log(chalk.green('[ok]'), message);
   }
 
   warn(message: string): void {
-    console.warn(chalk.yellow('⚠️'), message);
+    console.warn(chalk.yellow('[warn]'), message);
   }
 
   error(message: string): void {
-    console.error(chalk.red('❌'), message);
+    console.error(chalk.red('[error]'), message);
   }
 
   debug(message: string): void {
     if (this.verbose) {
-      console.log(chalk.gray('🔍'), message);
+      console.log(chalk.gray('[debug]'), message);
     }
   }
 
   step(message: string): void {
-    console.log(chalk.cyan('→'), message);
+    console.log(chalk.cyan('[>]'), message);
   }
 
   table(data: Record<string, any>[]): void {
@@ -45,12 +45,12 @@ export class Logger {
   }
 
   divider(): void {
-    console.log(chalk.gray('─'.repeat(60)));
+    console.log(chalk.gray('-'.repeat(60)));
   }
 
   header(title: string): void {
     console.log();
-    console.log(chalk.bold.cyan(`📋 ${title}`));
+    console.log(chalk.bold.cyan(`== ${title} ==`));
     this.divider();
   }
 
@@ -60,3 +60,4 @@ export class Logger {
 }
 
 export const logger = new Logger();
+

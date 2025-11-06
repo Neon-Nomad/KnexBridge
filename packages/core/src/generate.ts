@@ -19,7 +19,7 @@ export function generate(
   config: Partial<KnexBridgeConfig> = {}
 ): GenerationResult {
   const startTime = Date.now();
-  const mergedConfig = { ...DEFAULT_CONFIG, ...config };
+  const mergedConfig = { ...DEFAULT_CONFIG, ...config } as KnexBridgeConfig;
   const warnings: string[] = [];
   const filesGenerated: string[] = [];
 

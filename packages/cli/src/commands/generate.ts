@@ -1,5 +1,5 @@
 import { introspectDatabase, generate } from '@knexbridge/core';
-import { resolve } from 'path';
+import { resolve, basename } from 'path';
 import { existsSync } from 'fs';
 import { logger } from '../utils/logger';
 import { loadConfigFile, mergeConfig, validateConfig } from '../utils/config';
@@ -76,7 +76,7 @@ export async function generateCommand(options: GenerateOptions): Promise<void> {
     const configErrors = validateConfig(config);
     if (configErrors.length > 0) {
       logger.error('Configuration errors:');
-      configErrors.forEach(err => logger.error(`  • ${err}`));
+      configErrors.forEach((err: string) => logger.error(`  - ${err}`));
       process.exit(1);
     }
 
@@ -102,7 +102,7 @@ export async function generateCommand(options: GenerateOptions): Promise<void> {
     schema.tables.forEach(table => {
       const fkCount = table.foreign_keys.length;
       const fkText = fkCount > 0 ? chalk.gray(`, ${fkCount} FK`) : '';
-      logger.info(`  • ${chalk.white(table.name)} ${chalk.gray(`(${table.columns.length} columns${fkText})`)}`);
+      logger.info(`  - ${chalk.white(table.name)} ${chalk.gray(`(${table.columns.length} columns${fkText})`)}`);
     });
 
     // Generate files
@@ -120,7 +120,7 @@ export async function generateCommand(options: GenerateOptions): Promise<void> {
     logger.success('Generation complete!');
 
     result.filesGenerated.forEach(file => {
-      const fileName = file.split('/').pop() || file;
+      const fileName = basename(file);
       logger.metric(fileName, file);
     });
 

@@ -1,4 +1,4 @@
-import Knex from 'knex';
+import knexFactory, { Knex } from 'knex';
 import { DatabaseSchema, Table, Column, ForeignKey, DatabaseClient } from './types';
 import { IntrospectionError } from './errors';
 import { INTROSPECTION_TIMEOUT_MS } from './constants';
@@ -38,11 +38,11 @@ export async function introspectDatabase(
     );
   }
 
-  const knex = Knex(config);
+  const knex = knexFactory(config);
   
   // Set up timeout warning
   const timeout = setTimeout(() => {
-    console.warn('⚠️  Database introspection taking longer than expected...');
+    console.warn('Database introspection is taking longer than expected...');
   }, INTROSPECTION_TIMEOUT_MS);
 
   try {
@@ -82,7 +82,7 @@ export async function introspectDatabase(
  * Query schema information based on database client
  */
 async function querySchemaInfo(
-  knex: Knex.Knex,
+  knex: Knex,
   client: DatabaseClient,
   schemaName: string
 ): Promise<{
@@ -108,17 +108,18 @@ async function querySchemaInfo(
 }
 
 /**
- * Query PostgreSQL schema with foreign keys
+ * Query PostgreSQL schema with foreign keys and column comments
  */
 async function queryPostgresSchema(
-  knex: Knex.Knex,
+  knex: Knex,
   schemaName: string
 ): Promise<{
   columns: any[];
   foreignKeys: any[];
   enums: Map<string, string[]>;
 }> {
-  const columns = await knex.raw(`
+  const columns = await knex.raw(
+    `
     SELECT 
       c.table_name,
       c.column_name,
@@ -130,7 +131,7 @@ async function queryPostgresSchema(
       c.numeric_scale,
       CASE WHEN pk.column_name IS NOT NULL THEN true ELSE false END as is_primary_key,
       CASE WHEN uq.column_name IS NOT NULL THEN true ELSE false END as is_unique,
-      pgd.description as comment
+      pd.description as comment
     FROM information_schema.columns c
     LEFT JOIN (
       SELECT ku.table_name, ku.column_name
@@ -150,13 +151,19 @@ async function queryPostgresSchema(
       WHERE tc.constraint_type = 'UNIQUE'
         AND tc.table_schema = ?
     ) uq ON c.table_name = uq.table_name AND c.column_name = uq.column_name
-    LEFT JOIN pg_catalog.pg_statio_all_tables st ON c.table_name = st.relname AND st.schemaname = ?
-    LEFT JOIN pg_catalog.pg_description pgd ON pgd.objoid = st.relid
+    LEFT JOIN pg_class pc ON pc.relname = c.table_name AND pc.relnamespace = (
+      SELECT oid FROM pg_namespace WHERE nspname = ?
+    )
+    LEFT JOIN pg_attribute pa ON pa.attrelid = pc.oid AND pa.attname = c.column_name
+    LEFT JOIN pg_description pd ON pd.objoid = pa.attrelid AND pd.objsubid = pa.attnum
     WHERE c.table_schema = ?
     ORDER BY c.table_name, c.ordinal_position
-  `, [schemaName, schemaName, schemaName, schemaName]);
+  `,
+    [schemaName, schemaName, schemaName, schemaName]
+  );
 
-  const foreignKeys = await knex.raw(`
+  const foreignKeys = await knex.raw(
+    `
     SELECT
       kcu.table_name,
       kcu.column_name,
@@ -173,10 +180,13 @@ async function queryPostgresSchema(
       AND rc.unique_constraint_schema = ccu.table_schema
     WHERE kcu.table_schema = ?
     ORDER BY kcu.table_name, kcu.ordinal_position
-  `, [schemaName]);
+  `,
+    [schemaName]
+  );
 
   // Query enum types
-  const enumsResult = await knex.raw(`
+  const enumsResult = await knex.raw(
+    `
     SELECT 
       t.typname as enum_name,
       e.enumlabel as enum_value
@@ -185,10 +195,12 @@ async function queryPostgresSchema(
     JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace
     WHERE n.nspname = ?
     ORDER BY t.typname, e.enumsortorder
-  `, [schemaName]);
+  `,
+    [schemaName]
+  );
 
   const enums = new Map<string, string[]>();
-  enumsResult.rows.forEach((row: any) => {
+  (enumsResult.rows || []).forEach((row: any) => {
     if (!enums.has(row.enum_name)) {
       enums.set(row.enum_name, []);
     }
@@ -206,14 +218,15 @@ async function queryPostgresSchema(
  * Query MySQL schema with foreign keys
  */
 async function queryMySQLSchema(
-  knex: Knex.Knex,
+  knex: Knex,
   schemaName: string
 ): Promise<{
   columns: any[];
   foreignKeys: any[];
   enums: Map<string, string[]>;
 }> {
-  const columns = await knex.raw(`
+  const columns = await knex.raw(
+    `
     SELECT 
       c.TABLE_NAME as table_name,
       c.COLUMN_NAME as column_name,
@@ -230,9 +243,12 @@ async function queryMySQLSchema(
     FROM INFORMATION_SCHEMA.COLUMNS c
     WHERE c.TABLE_SCHEMA = ?
     ORDER BY c.TABLE_NAME, c.ORDINAL_POSITION
-  `, [schemaName]);
+  `,
+    [schemaName]
+  );
 
-  const foreignKeys = await knex.raw(`
+  const foreignKeys = await knex.raw(
+    `
     SELECT 
       kcu.TABLE_NAME as table_name,
       kcu.COLUMN_NAME as column_name,
@@ -247,11 +263,13 @@ async function queryMySQLSchema(
     WHERE kcu.TABLE_SCHEMA = ?
       AND kcu.REFERENCED_TABLE_NAME IS NOT NULL
     ORDER BY kcu.TABLE_NAME, kcu.ORDINAL_POSITION
-  `, [schemaName]);
+  `,
+    [schemaName]
+  );
 
   // Parse MySQL ENUM types
   const enums = new Map<string, string[]>();
-  columns[0].forEach((col: any) => {
+  (columns[0] || []).forEach((col: any) => {
     if (col.data_type === 'enum' && col.column_type) {
       const match = col.column_type.match(/enum\((.*)\)/i);
       if (match) {
@@ -271,30 +289,43 @@ async function queryMySQLSchema(
 }
 
 /**
- * Query SQLite schema with foreign keys (FIXED)
+ * Query SQLite schema with foreign keys
  */
-async function querySQLiteSchema(knex: Knex.Knex): Promise<{
+async function querySQLiteSchema(knex: Knex): Promise<{
   columns: any[];
   foreignKeys: any[];
   enums: Map<string, string[]>;
 }> {
-  const tablesResult = await knex.raw(`
-    SELECT name FROM sqlite_master 
-    WHERE type='table' AND name NOT LIKE 'sqlite_%'
-    ORDER BY name
-  `);
+  const tables = await knex('sqlite_master')
+    .select<{ name: string }[]>('name')
+    .where('type', 'table')
+    .andWhere('name', 'not like', 'sqlite_%')
+    .orderBy('name');
 
-  const tables = tablesResult;
   const allColumns: any[] = [];
   const allForeignKeys: any[] = [];
 
-  for (const table of tables) {
-    // ✅ FIXED: Use parameterized query
-    const columnsResult = await knex.raw('PRAGMA table_info(?)', [table.name]);
-    
-    for (const col of columnsResult) {
+  const getRows = (res: any): any[] => {
+    if (!res) return [];
+    if (Array.isArray(res)) {
+      // mysql2-like shape [rows, fields]
+      if (Array.isArray(res[0])) return res[0];
+      return res;
+    }
+    if (Array.isArray(res.rows)) return res.rows;
+    return [];
+  };
+
+  for (const t of tables) {
+    const tableName = t.name;
+    const ident = tableName.replace(/"/g, '""');
+
+    const columnsResult = await knex.raw(`PRAGMA table_info("${ident}")`);
+    const cols = getRows(columnsResult);
+
+    for (const col of cols) {
       allColumns.push({
-        table_name: table.name,
+        table_name: tableName,
         column_name: col.name,
         data_type: parseSQLiteType(col.type),
         is_nullable: col.notnull === 0,
@@ -304,21 +335,21 @@ async function querySQLiteSchema(knex: Knex.Knex): Promise<{
         numeric_scale: null,
         is_primary_key: col.pk === 1,
         is_unique: false,
-        comment: null
+        comment: null,
       });
     }
 
-    // ✅ FIXED: Use parameterized query
-    const fkResult = await knex.raw('PRAGMA foreign_key_list(?)', [table.name]);
-    
-    for (const fk of fkResult) {
+    const fkResult = await knex.raw(`PRAGMA foreign_key_list("${ident}")`);
+    const fks = getRows(fkResult);
+
+    for (const fk of fks) {
       allForeignKeys.push({
-        table_name: table.name,
+        table_name: tableName,
         column_name: fk.from,
         foreign_table_name: fk.table,
         foreign_column_name: fk.to,
         on_update: fk.on_update,
-        on_delete: fk.on_delete
+        on_delete: fk.on_delete,
       });
     }
   }
@@ -326,7 +357,7 @@ async function querySQLiteSchema(knex: Knex.Knex): Promise<{
   return {
     columns: allColumns,
     foreignKeys: allForeignKeys,
-    enums: new Map()
+    enums: new Map(),
   };
 }
 
@@ -334,7 +365,7 @@ async function querySQLiteSchema(knex: Knex.Knex): Promise<{
  * Parse SQLite type string
  */
 function parseSQLiteType(type: string): string {
-  const upper = type.toUpperCase();
+  const upper = (type || '').toUpperCase();
   if (upper.includes('INT')) return 'INTEGER';
   if (upper.includes('CHAR') || upper.includes('CLOB') || upper.includes('TEXT')) return 'TEXT';
   if (upper.includes('BLOB')) return 'BLOB';

@@ -50,7 +50,7 @@ export async function introspectCommand(options: IntrospectOptions): Promise<voi
       table.columns.forEach(col => {
         const nullable = col.nullable ? chalk.gray('NULL') : chalk.yellow('NOT NULL');
         const pk = col.isPrimaryKey ? chalk.cyan(' PK') : '';
-        console.log(`    • ${chalk.white(col.name)}: ${chalk.green(col.type)} ${nullable}${pk}`);
+        console.log(`    - ${chalk.white(col.name)}: ${chalk.green(col.type)} ${nullable}${pk}`);
       });
 
       if (table.foreign_keys.length > 0) {
@@ -58,7 +58,7 @@ export async function introspectCommand(options: IntrospectOptions): Promise<voi
         console.log(chalk.gray('  Foreign Keys:'));
         table.foreign_keys.forEach(fk => {
           console.log(
-            `    • ${chalk.white(fk.columnName)} → ${chalk.cyan(fk.foreignTableName)}.${chalk.cyan(fk.foreignColumnName)}`
+            `    - ${chalk.white(fk.columnName)} -> ${chalk.cyan(fk.foreignTableName)}.${chalk.cyan(fk.foreignColumnName)}`
           );
         });
       }
@@ -73,3 +73,4 @@ export async function introspectCommand(options: IntrospectOptions): Promise<voi
     process.exit(1);
   }
 }
+
