@@ -97,6 +97,149 @@ function createSqliteKnexStub() {
   return stub;
 }
 
+function createPostgresKnexStub() {
+  const state = { rawCalls: [], destroyed: false };
+
+  const columnsRows = [
+    {
+      table_name: 'users',
+      column_name: 'id',
+      data_type: 'integer',
+      is_nullable: 'NO',
+      column_default: "nextval('users_id_seq'::regclass)",
+      character_maximum_length: null,
+      numeric_precision: 32,
+      numeric_scale: 0,
+      is_primary_key: true,
+      is_unique: true,
+      comment: 'Primary key',
+    },
+    {
+      table_name: 'users',
+      column_name: 'email',
+      data_type: 'character varying',
+      is_nullable: 'NO',
+      column_default: null,
+      character_maximum_length: 255,
+      numeric_precision: null,
+      numeric_scale: null,
+      is_primary_key: false,
+      is_unique: true,
+      comment: 'User email',
+    },
+  ];
+
+  const foreignKeyRows = [
+    {
+      table_name: 'posts',
+      column_name: 'user_id',
+      foreign_table_name: 'users',
+      foreign_column_name: 'id',
+      on_update: 'NO ACTION',
+      on_delete: 'CASCADE',
+    },
+  ];
+
+  const enumRows = [
+    { enum_name: 'status_enum', enum_value: 'ACTIVE' },
+    { enum_name: 'status_enum', enum_value: 'INACTIVE' },
+  ];
+
+  const stub = () => {
+    throw new Error('Unexpected builder usage in Postgres stub');
+  };
+
+  stub.raw = async sql => {
+    state.rawCalls.push(sql);
+    if (/information_schema\.columns/i.test(sql)) {
+      return { rows: columnsRows };
+    }
+    if (/referential_constraints/i.test(sql)) {
+      return { rows: foreignKeyRows };
+    }
+    if (/pg_enum/i.test(sql)) {
+      return { rows: enumRows };
+    }
+    throw new Error(`Unexpected SQL for Postgres stub: ${sql}`);
+  };
+
+  stub.destroy = async () => {
+    state.destroyed = true;
+  };
+
+  stub.state = state;
+
+  return stub;
+}
+
+function createMySqlKnexStub() {
+  const state = { rawCalls: [], destroyed: false };
+
+  const columnRows = [
+    {
+      table_name: 'users',
+      column_name: 'id',
+      data_type: 'int',
+      is_nullable: 'NO',
+      column_default: null,
+      character_maximum_length: null,
+      numeric_precision: 11,
+      numeric_scale: 0,
+      is_primary_key: 1,
+      is_unique: 1,
+      comment: 'Primary key',
+      column_type: 'int(11)',
+    },
+    {
+      table_name: 'users',
+      column_name: 'status',
+      data_type: 'enum',
+      is_nullable: 'NO',
+      column_default: 'draft',
+      character_maximum_length: null,
+      numeric_precision: null,
+      numeric_scale: null,
+      is_primary_key: 0,
+      is_unique: 0,
+      comment: 'Account status',
+      column_type: "enum('draft','active')",
+    },
+  ];
+
+  const foreignKeyRows = [
+    {
+      table_name: 'posts',
+      column_name: 'user_id',
+      foreign_table_name: 'users',
+      foreign_column_name: 'id',
+      on_update: 'NO ACTION',
+      on_delete: 'CASCADE',
+    },
+  ];
+
+  const stub = () => {
+    throw new Error('Unexpected builder usage in MySQL stub');
+  };
+
+  stub.raw = async sql => {
+    state.rawCalls.push(sql);
+    if (/INFORMATION_SCHEMA\.COLUMNS/i.test(sql)) {
+      return [columnRows];
+    }
+    if (/INFORMATION_SCHEMA\.KEY_COLUMN_USAGE/i.test(sql)) {
+      return [foreignKeyRows];
+    }
+    return [[]];
+  };
+
+  stub.destroy = async () => {
+    state.destroyed = true;
+  };
+
+  stub.state = state;
+
+  return stub;
+}
 test('introspectDatabase rejects when knexfile cannot be loaded', async () => {
   const { introspectDatabase } = requireFreshIntrospect();
 
@@ -208,3 +351,119 @@ test('introspectDatabase returns SQLite schema details when knex succeeds', asyn
     fs.rmSync(tempDir, { recursive: true, force: true });
   }
 });
+
+
+
+test('introspectDatabase merges PostgreSQL schema details correctly', async () => {
+  const originalKnexModule = require.cache[knexModulePath];
+  const stubFactory = () => createPostgresKnexStub();
+
+  require.cache[knexModulePath] = { exports: stubFactory };
+  const { introspectDatabase } = requireFreshIntrospect();
+
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'knexbridge-pg-'));
+  const knexfilePath = path.join(tempDir, 'knexfile.js');
+
+  fs.writeFileSync(
+    knexfilePath,
+    `module.exports = {
+      development: {
+        client: 'pg',
+        connection: {}
+      }
+    };`
+  );
+
+  delete require.cache[require.resolve(knexfilePath)];
+
+  try {
+    const result = await introspectDatabase(knexfilePath, 'development', {
+      schemaName: 'public',
+    });
+
+    assert.equal(result.tables.length, 1);
+
+    const usersTable = result.tables.find(table => table.name === 'users');
+    assert.ok(usersTable, 'users table should be present');
+    assert.equal(usersTable.columns.length, 2);
+
+    const idColumn = usersTable.columns.find(col => col.name === 'id');
+    assert.ok(idColumn);
+    assert.equal(idColumn.isPrimaryKey, true);
+    assert.equal(idColumn.comment, 'Primary key');
+
+    const emailColumn = usersTable.columns.find(col => col.name === 'email');
+    assert.ok(emailColumn);
+    assert.equal(emailColumn.isUnique, true);
+
+    assert.ok(usersTable.enums instanceof Map);
+    assert.deepEqual(usersTable.enums.get('status_enum'), ['ACTIVE', 'INACTIVE']);
+  } finally {
+    if (originalKnexModule) {
+      require.cache[knexModulePath] = originalKnexModule;
+    } else {
+      delete require.cache[knexModulePath];
+    }
+    delete require.cache[introspectModulePath];
+    delete require.cache[require.resolve(knexfilePath)];
+    fs.rmSync(tempDir, { recursive: true, force: true });
+  }
+});
+
+
+test('introspectDatabase merges MySQL schema details correctly', async () => {
+  const originalKnexModule = require.cache[knexModulePath];
+  const stubFactory = () => createMySqlKnexStub();
+
+  require.cache[knexModulePath] = { exports: stubFactory };
+  const { introspectDatabase } = requireFreshIntrospect();
+
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'knexbridge-mysql-'));
+  const knexfilePath = path.join(tempDir, 'knexfile.js');
+
+  fs.writeFileSync(
+    knexfilePath,
+    `module.exports = {
+      development: {
+        client: 'mysql',
+        connection: {}
+      }
+    };`
+  );
+
+  delete require.cache[require.resolve(knexfilePath)];
+
+  try {
+    const result = await introspectDatabase(knexfilePath, 'development', {
+      schemaName: 'public',
+    });
+
+    const usersTable = result.tables.find(table => table.name === 'users');
+    assert.ok(usersTable);
+    assert.equal(usersTable.columns.length, 2);
+
+    const idColumn = usersTable.columns.find(col => col.name === 'id');
+    assert.ok(idColumn);
+    assert.equal(idColumn.isPrimaryKey, true);
+
+    const statusColumn = usersTable.columns.find(col => col.name === 'status');
+    assert.ok(statusColumn);
+    assert.equal(statusColumn.nullable, false);
+
+    assert.ok(usersTable.enums instanceof Map);
+    assert.deepEqual(usersTable.enums.get('users_status'), ['draft', 'active']);
+  } finally {
+    if (originalKnexModule) {
+      require.cache[knexModulePath] = originalKnexModule;
+    } else {
+      delete require.cache[knexModulePath];
+    }
+    delete require.cache[introspectModulePath];
+    delete require.cache[require.resolve(knexfilePath)];
+    fs.rmSync(tempDir, { recursive: true, force: true });
+  }
+});
+
+
+
+
