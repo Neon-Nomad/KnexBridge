@@ -1,27 +1,13 @@
 {
   "name": "knexbridge-monorepo",
-  "version": "1.0.0",
   "private": true,
-  "workspaces": [
-    "packages/*"
-  ],
+  "workspaces": {
+    "packages": [
+      "packages/core",
+      "packages/cli"
+    ]
+  },
   "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev",
-    "test": "turbo run test",
-    "lint": "turbo run lint",
-    "clean": "turbo run clean && rm -rf node_modules",
-    "changeset": "changeset",
-    "version-packages": "changeset version",
-    "release": "turbo run build && changeset publish"
-  },
-  "devDependencies": {
-    "@changesets/cli": "^2.26.2",
-    "turbo": "^1.10.16",
-    "typescript": "^5.3.3"
-  },
-  "engines": {
-    "node": ">=16.0.0",
-    "npm": ">=8.0.0"
+    "build": "npm run build --workspaces --if-present"
   }
 }

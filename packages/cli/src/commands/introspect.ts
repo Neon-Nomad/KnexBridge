@@ -1,9 +1,9 @@
 import { introspectDatabase } from '@knexbridge/core';
-import { resolve } from 'path';
-import { existsSync } from 'fs';
-import { logger } from '../utils/logger';
+import { resolve } from 'node:path';
+import { existsSync } from 'node:fs';
 import ora from 'ora';
 import chalk from 'chalk';
+import { logger } from '../utils/logger.js';
 
 export interface IntrospectOptions {
   config: string;
@@ -73,4 +73,3 @@ export async function introspectCommand(options: IntrospectOptions): Promise<voi
     process.exit(1);
   }
 }
-

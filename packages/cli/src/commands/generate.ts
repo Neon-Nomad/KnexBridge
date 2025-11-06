@@ -1,11 +1,11 @@
-import { introspectDatabase, generate } from '@knexbridge/core';
-import { resolve, basename } from 'path';
-import { existsSync } from 'fs';
-import { logger } from '../utils/logger';
-import { loadConfigFile, mergeConfig, validateConfig } from '../utils/config';
-import { MAX_WARNINGS_DISPLAY } from '@knexbridge/core';
+import { createRequire } from 'node:module';
+import { existsSync } from 'node:fs';
+import { resolve, basename } from 'node:path';
 import ora from 'ora';
 import chalk from 'chalk';
+import { introspectDatabase, generate, MAX_WARNINGS_DISPLAY } from '@knexbridge/core';
+import { logger } from '../utils/logger.js';
+import { loadConfigFile, mergeConfig, validateConfig } from '../utils/config.js';
 
 export interface GenerateOptions {
   config: string;
@@ -44,6 +44,8 @@ export async function generateCommand(options: GenerateOptions): Promise<void> {
       logger.info(`Create a knexfile.js with: npx knex init`);
       process.exit(1);
     }
+
+    const require = createRequire(import.meta.url);
 
     let knexConfig: any;
     try {
@@ -173,7 +175,7 @@ export async function generateCommand(options: GenerateOptions): Promise<void> {
 
       console.log();
       logger.info('Use custom type mappings to resolve warnings');
-      logger.info('See: https://github.com/yourusername/knexbridge#custom-type-mappings');
+      logger.info('See: https://github.com/Neon-Nomad/KnexBridge#custom-type-mappings');
     }
   } catch (error) {
     logger.error((error as Error).message);

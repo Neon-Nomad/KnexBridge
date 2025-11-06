@@ -1,11 +1,13 @@
 {
   "name": "@knexbridge/core",
-  "version": "1.0.0",
-  "description": "Core introspection and code generation for KnexBridge",
+  "version": "0.22.1",
+  "description": "Core library to introspect Knex databases and generate TypeScript types and Zod schemas.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
     "build": "tsc",
@@ -23,5 +25,18 @@
     "@types/pluralize": "^0.0.29",
     "typescript": "^5.3.3"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Neon-Nomad/KnexBridge"
+  },
+  "keywords": [
+    "knex",
+    "typescript",
+    "zod",
+    "codegen",
+    "schema",
+    "orm",
+    "cli"
+  ]
 }
