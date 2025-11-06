@@ -1,0 +1,69 @@
+name: postgres-smoke
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:14-alpine
+        env:
+          POSTGRES_DB: testdb
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpassword
+        ports:
+          - 5432:5432
+        options: >
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Create knexfile.js
+        run: |
+          cat <<'KNEX' > knexfile.js
+          module.exports = {
+            development: {
+              client: 'pg',
+              connection: {
+                host: 'localhost',
+                port: 5432,
+                user: 'testuser',
+                password: 'testpassword',
+                database: 'testdb',
+              },
+            },
+          };
+          KNEX
+
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          for i in $(seq 1 10); do 
+            nc -z localhost 5432 && echo "Postgres is up." && break || echo "Waiting for Postgres..."; 
+            sleep 1; 
+          done
+
+      - name: Build packages
+        run: npm run build
+
+      - name: Run Tests
+        run: npm test
