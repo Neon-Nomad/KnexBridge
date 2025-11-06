@@ -4,20 +4,10 @@
   "workspaces": ["packages/*"],
   "scripts": {
     "build": "npm run build --workspaces --if-present",
-    "test": "jest",
-    "test:unit": "jest --testPathPattern=unit",
-    "test:integration": "jest --testPathPattern=integration --runInBand",
-    "test:e2e": "jest --testPathPattern=e2e --runInBand",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "build:core": "npm run build --workspace knexbridge-core",
+    "test": "npm run build:core && node --test tests/**/*.test.js"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.0",
-    "jest": "^29.5.0",
-    "ts-jest": "^29.1.0",
-    "sqlite3": "^5.1.6",
-    "pg": "^8.11.0",
-    "mysql2": "^3.6.0",
     "typescript": "^5.9.3"
   }
 }

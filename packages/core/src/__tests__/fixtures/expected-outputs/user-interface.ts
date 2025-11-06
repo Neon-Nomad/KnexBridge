@@ -1,1 +1,0 @@
-export const userInterface = `export interface User {\n  /** Primary identifier */\n  id: number;\n  /** User email address */\n  email: string;\n  /** Creation timestamp */\n  createdAt: Date;\n}\n`;
