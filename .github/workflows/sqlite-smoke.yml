@@ -18,9 +18,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Install sqlite3 (no-save)
         run: npm install sqlite3@5 --no-save
@@ -42,15 +43,7 @@ jobs:
 
       - name: Seed SQLite database
         run: |
-          node - <<'NODE'
-          const sqlite3 = require('sqlite3').verbose();
-          const db = new sqlite3.Database('./test.db');
-          db.serialize(() => {
-            db.run('DROP TABLE IF EXISTS users');
-            db.run('CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL);');
-          });
-          db.close();
-          NODE
+          node -e "const sqlite3 = require('sqlite3').verbose(); const db = new sqlite3.Database('./test.db'); db.serialize(() => { db.run('DROP TABLE IF EXISTS users'); db.run('CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL);'); }); db.close();"
 
       - name: Build packages
         run: npm run build
