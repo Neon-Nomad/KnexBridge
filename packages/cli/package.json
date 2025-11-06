@@ -1,46 +1,46 @@
 {
-  "name": "knexbridge",
-  "version": "0.22.1",
-  "description": "CLI to generate TypeScript types and Zod schemas from your Knex.js database.",
-  "type": "module",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "bin": {
-    "knexbridge": "dist/index.js"
-  },
-  "files": [
-    "dist",
-    "README.md",
-    "LICENSE"
-  ],
-  "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch",
-    "clean": "rimraf dist || rm -rf dist",
-    "prepublishOnly": "npm run build"
-  },
-  "keywords": [
-    "knex",
-    "cli",
-    "typescript",
-    "codegen",
-    "schema",
-    "orm",
-    "zod"
-  ],
-  "license": "MIT",
-  "dependencies": {
-    "@knexbridge/core": "file:../core",
-    "chalk": "^5.3.0",
-    "commander": "^11.1.0",
-    "ora": "^6.3.1"
-  },
-  "devDependencies": {
-    "@types/node": "^20.10.5",
-    "typescript": "^5.3.3"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Neon-Nomad/KnexBridge"
-  }
+    "name": "knexbridge",
+    "version": "0.22.1",
+    "description": "CLI to generate TypeScript types and Zod schemas from your Knex.js database.",
+    "type": "module",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "bin": {
+        "knexbridge": "dist/index.js"
+    },
+    "files": [
+        "dist",
+        "README.md",
+        "LICENSE"
+    ],
+    "scripts": {
+        "build": "tsc",
+        "dev": "tsc --watch",
+        "clean": "rimraf dist || rm -rf dist",
+        "prepublishOnly": "npm run build"
+    },
+    "keywords": [
+        "knex",
+        "cli",
+        "typescript",
+        "codegen",
+        "schema",
+        "orm",
+        "zod"
+    ],
+    "license": "MIT",
+    "dependencies": {
+        "chalk": "^5.3.0",
+        "commander": "^11.1.0",
+        "knexbridge-core": "file:../core",
+        "ora": "^6.3.1"
+    },
+    "devDependencies": {
+        "@types/node": "^20.10.5",
+        "typescript": "^5.3.3"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Neon-Nomad/KnexBridge"
+    }
 }

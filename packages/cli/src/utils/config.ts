@@ -1,4 +1,4 @@
-import { KnexBridgeConfig } from '@knexbridge/core';
+import { KnexBridgeConfig } from 'knexbridge-core';
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { logger } from './logger.js';

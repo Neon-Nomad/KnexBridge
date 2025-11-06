@@ -3,7 +3,7 @@ import { existsSync } from 'node:fs';
 import { resolve, basename } from 'node:path';
 import ora from 'ora';
 import chalk from 'chalk';
-import { introspectDatabase, generate, MAX_WARNINGS_DISPLAY } from '@knexbridge/core';
+import { introspectDatabase, generate, MAX_WARNINGS_DISPLAY } from 'knexbridge-core';
 import { logger } from '../utils/logger.js';
 import { loadConfigFile, mergeConfig, validateConfig } from '../utils/config.js';
 

@@ -1,4 +1,4 @@
-import { introspectDatabase } from '@knexbridge/core';
+import { introspectDatabase } from 'knexbridge-core';
 import { resolve } from 'node:path';
 import { existsSync } from 'node:fs';
 import ora from 'ora';

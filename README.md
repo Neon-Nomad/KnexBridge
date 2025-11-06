@@ -22,7 +22,8 @@ KnexBridge automates the path from database schema to application code. By combi
 
 ## Installation
 ```bash
-npm install --save-dev @knexbridge/cli
+npm install --save-dev knexbridge
+npm install knexbridge-core
 ```
 
 ## Quick Start
@@ -156,7 +157,7 @@ All contributors are expected to follow the [Contributor Covenant Code of Conduc
 - **Discussions:** use the GitHub Discussions tab for design ideas or roadmap suggestions.
 
 ### Development Notes
-- Node.js ≥ 18.18.0 is required.
+- Node.js >= 18.18.0 is required.
 - Linting configuration lives in `.eslintrc.json`.
 - Core logic is under `packages/core/src/`.
 - CLI code lives in `packages/cli/src/`.
@@ -165,4 +166,3 @@ All contributors are expected to follow the [Contributor Covenant Code of Conduc
 
 ## License
 Licensed under the [MIT License](./LICENSE).
-

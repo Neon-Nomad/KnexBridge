@@ -1,13 +1,1 @@
-{
-  "name": "knexbridge-monorepo",
-  "private": true,
-  "workspaces": {
-    "packages": [
-      "packages/core",
-      "packages/cli"
-    ]
-  },
-  "scripts": {
-    "build": "npm run build --workspaces --if-present"
-  }
-}
+{"name":"knexbridge-monorepo","private":true,"workspaces":["packages/*"],"scripts":{"build":"npm run build --workspaces --if-present"}}
