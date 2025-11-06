@@ -21,35 +21,40 @@ KnexBridge automates the path from database schema to application code. By combi
 - CLI workflow with progress reporting, metrics, and optional configuration files.
 
 ## Installation
-`ash
+```bash
 npm install --save-dev @knexbridge/cli
-`
+```
 
 ## Quick Start
-1. Create a knexfile.js describing your Knex environments:
-`javascript
-/** @type {import('knex').Knex.Config} */
-module.exports = {
-  development: {
-    client: 'sqlite3',
-    connection: {
-      filename: './dev.sqlite',
-    },
-    useNullAsDefault: true,
-  },
-};
-`
+1. Create a `knexfile.js` describing your Knex environments:
+
+   ```javascript
+   /** @type {import('knex').Knex.Config} */
+   module.exports = {
+     development: {
+       client: 'sqlite3',
+       connection: {
+         filename: './dev.sqlite',
+       },
+       useNullAsDefault: true,
+     },
+   };
+   ```
+
 2. Generate code into a target folder:
-`ash
-npx knexbridge generate --config ./knexfile.js --env development --out ./generated
-`
+
+   ```bash
+   npx knexbridge generate --config ./knexfile.js --env development --out ./generated
+   ```
+
 3. Import the generated modules from your application:
-`	ypescript
-import { bridge } from './generated';
-`
+
+   ```typescript
+   import { bridge } from './generated';
+   ```
 
 ## Example Output
-`	ypescript
+```typescript
 // generated/bridge.schema.ts
 export interface User {
   id: number;
@@ -60,8 +65,9 @@ export interface User {
 
 export type UserInsert = Pick<User, 'username' | 'email'>;
 export type UserUpdate = Partial<Pick<User, 'username' | 'email'>>;
-`
-`	ypescript
+```
+
+```typescript
 // generated/bridge.validation.ts
 import { z } from 'zod';
 
@@ -71,18 +77,16 @@ export const UserSchema = z.object({
   email: z.string().email().nullable(),
   createdAt: z.date(),
 });
-`
+```
 
 ## Development
-`ash
+```bash
 npm install
 npm run build
 npm run test
-`
-- 
-pm run build compiles the core and CLI packages.
-- 
-pm run test performs type-level smoke tests across the workspace.
+```
+- `npm run build` compiles the core and CLI packages.
+- `npm run test` performs type-level smoke tests across the workspace.
 
 ## Roadmap
 - Add PostgreSQL, MySQL, and SQL Server dialect support with driver autodetection.
@@ -91,9 +95,74 @@ pm run test performs type-level smoke tests across the workspace.
 - Publish official VS Code snippets and typed SDK examples.
 
 ## Contributing
-Contributions are welcome. Open an issue to discuss ideas or submit a pull request with tests and documentation updates.
+
+### Code of Conduct
+All contributors are expected to follow the [Contributor Covenant Code of Conduct](https://www.contributor-covenant.org/version/2/1/code_of_conduct/). Be respectful, constructive, and professional at all times.
+
+### Getting Started
+1. **Fork and Clone**
+
+   ```bash
+   git clone https://github.com/<your-username>/KnexBridge.git
+   cd KnexBridge
+   npm install
+   ```
+
+2. **Build the Packages**
+
+   ```bash
+   npm run build
+   ```
+
+3. **Run the CLI Locally**
+
+   ```bash
+   node packages/cli/dist/cli.js generate --config ./knexfile.js --out ./generated
+   ```
+
+4. **Test**
+
+   Run all tests before submitting changes:
+
+   ```bash
+   npm test
+   ```
+
+### Branching & Commits
+- Create a new branch for each change:
+
+  ```bash
+  git checkout -b feature/add-postgres-support
+  ```
+
+- Use conventional commits (`feat:`, `fix:`, `chore:`, `docs:`).
+- Keep commits atomic and messages clear.
+
+### Pull Requests
+- Ensure your code builds with no TypeScript errors.
+- Run linting before pushing:
+
+  ```bash
+  npm run lint
+  ```
+
+- Include tests for new features.
+- Update documentation (README, comments, etc.) when behavior changes.
+- Open a PR against the `main` branch and describe why the change matters.
+
+### Issue Guidelines
+- **Bug reports:** include reproduction steps, environment details, and relevant logs.
+- **Feature requests:** explain the use case and proposed API or CLI syntax.
+- **Discussions:** use the GitHub Discussions tab for design ideas or roadmap suggestions.
+
+### Development Notes
+- Node.js ≥ 18.18.0 is required.
+- Linting configuration lives in `.eslintrc.json`.
+- Core logic is under `packages/core/src/`.
+- CLI code lives in `packages/cli/src/`.
+
+![KnexBridge Footer](./images/readme4.png)
 
 ## License
 Licensed under the [MIT License](./LICENSE).
 
-![KnexBridge Footer](./images/readme4.png)
