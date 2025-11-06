@@ -12,7 +12,7 @@ KnexBridge bridges relational databases and TypeScript applications by introspec
 ![KnexBridge Code Example](./images/readme2.png)
 
 ## Introduction
-KnexBridge automates the path from database schema to application code. By combining schema introspection, naming strategies, and template-driven code generation, it delivers TypeScript interfaces, insert/update helpers, and Zod validators that stay accurate with every migration. Engineers, data teams, and API builders who work with Knex.js can integrate it into CI pipelines or run it on demand from the CLI.
+\n\n## Why KnexBridge\n- Eliminates schema drift by regenerating types and validators every time your schema changes.\n- Provides runtime security through Zod contracts that mirror your database, catching malformed payloads before they hit storage.\n- Keeps teams in sync by producing canonical models that front-end, back-end, and data pipelines can share.
 
 ## Features
 - Database introspection for SQLite, PostgreSQL, and MySQL today (SQL Server on the roadmap).
@@ -177,3 +177,4 @@ All contributors are expected to follow the [Contributor Covenant Code of Conduc
 
 ## License
 Licensed under the [MIT License](./LICENSE).
+

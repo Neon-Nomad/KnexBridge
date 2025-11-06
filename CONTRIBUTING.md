@@ -16,6 +16,7 @@ Participation in this project is governed by the [Contributor Covenant Code of C
 ### 1. Fork and Clone
 `ash
 git clone https://github.com/<your-username>/KnexBridge.git
+# Look for issues tagged "good first issue" to get involved quickly.
 cd KnexBridge
 npm install
 `
@@ -85,4 +86,5 @@ pm run lint).
 ## Need Help?
 If you are unsure about anything, open a GitHub issue with the question label or join the discussions board. Maintainers and contributors are happy to help.
 
-We appreciate your time and effort in making KnexBridge better. Happy coding!
+We appreciate your time and effort in making KnexBridge better. Please include a Signed-off-by line (DCO) in every commit; we plan to adopt a lightweight CLA as the commercial offering grows. Happy coding!
+
