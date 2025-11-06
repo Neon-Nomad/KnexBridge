@@ -5,7 +5,7 @@
   "scripts": {
     "build": "npm run build --workspaces --if-present",
     "build:core": "npm run build --workspace knexbridge-core",
-    "test": "npm run build:core && node --test tests/**/*.test.js"
+    "test": "npm run build:core && node --test \"tests/**/*.test.js\""
   },
   "devDependencies": {
     "typescript": "^5.9.3"
