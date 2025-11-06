@@ -1,5 +1,7 @@
 # KnexBridge
 
+[![SQLite Smoke Tests](https://github.com/Neon-Nomad/KnexBridge/actions/workflows/sqlite-smoke.yml/badge.svg)](https://github.com/Neon-Nomad/KnexBridge/actions/workflows/sqlite-smoke.yml) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![OpenSSF Best Practices](https://img.shields.io/badge/OpenSSF%20Best%20Practices-in%20progress-lightgrey.svg)](https://bestpractices.dev/en/projects)
+
 ## Generate Types. Validate Everything.
 
 ![KnexBridge Hero](./images/readme1.png)
@@ -173,3 +175,4 @@ All contributors are expected to follow the [Contributor Covenant Code of Conduc
 
 ## License
 Licensed under the [MIT License](./LICENSE).
+
