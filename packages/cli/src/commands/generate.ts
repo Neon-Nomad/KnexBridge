@@ -3,7 +3,7 @@ import { existsSync } from 'node:fs';
 import { resolve, basename } from 'node:path';
 import ora from 'ora';
 import chalk from 'chalk';
-import { introspectDatabase, generate, MAX_WARNINGS_DISPLAY } from 'knexbridge-core';
+import { introspectDatabase, generate, MAX_WARNINGS_DISPLAY, type KnexBridgeConfig } from 'knexbridge-core';
 import { logger } from '../utils/logger.js';
 import { loadConfigFile, mergeConfig, validateConfig } from '../utils/config.js';
 
@@ -73,7 +73,7 @@ export async function generateCommand(options: GenerateOptions): Promise<void> {
     const fileConfig = loadConfigFile(options.configFile);
 
     // Parse CLI options
-    const cliConfig = {
+    const cliConfig: Partial<KnexBridgeConfig> = {
       environment: options.env,
       outDir: options.out,
       generateTypes: options.types,
@@ -93,8 +93,12 @@ export async function generateCommand(options: GenerateOptions): Promise<void> {
       excludeFromUpdate: options.excludeFromUpdate?.split(',').map(s => s.trim()),
     };
 
+    const sanitizedCliConfig = Object.fromEntries(
+      Object.entries(cliConfig).filter(([, value]) => value !== undefined)
+    ) as Partial<KnexBridgeConfig>;
+
     // Merge configurations
-    const config = mergeConfig(cliConfig, fileConfig);
+    const config = mergeConfig(sanitizedCliConfig, fileConfig);
 
     // Validate configuration
     const configErrors = validateConfig(config);
