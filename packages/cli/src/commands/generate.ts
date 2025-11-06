@@ -3,7 +3,14 @@ import { existsSync } from 'node:fs';
 import { resolve, basename } from 'node:path';
 import ora from 'ora';
 import chalk from 'chalk';
-import { introspectDatabase, generate, MAX_WARNINGS_DISPLAY, type KnexBridgeConfig } from 'knexbridge-core';
+import {
+  introspectDatabase,
+  generate,
+  MAX_WARNINGS_DISPLAY,
+  type KnexBridgeConfig,
+  type Table,
+  type GenerationResult,
+} from 'knexbridge-core';
 import { logger } from '../utils/logger.js';
 import { loadConfigFile, mergeConfig, validateConfig } from '../utils/config.js';
 
@@ -127,7 +134,7 @@ export async function generateCommand(options: GenerateOptions): Promise<void> {
     logger.header('Database Schema');
     logger.metric('Tables found', schema.tables.length);
 
-    schema.tables.forEach(table => {
+    schema.tables.forEach((table: Table) => {
       const fkCount = table.foreign_keys.length;
       const fkText = fkCount > 0 ? chalk.gray(`, ${fkCount} FK`) : '';
       logger.info(`  - ${chalk.white(table.name)} ${chalk.gray(`(${table.columns.length} columns${fkText})`)}`);
@@ -139,7 +146,7 @@ export async function generateCommand(options: GenerateOptions): Promise<void> {
 
     const genSpinner = ora('Generating TypeScript types and Zod schemas...').start();
 
-    const result = generate(schema, outDir, config);
+    const result: GenerationResult = generate(schema, outDir, config);
 
     genSpinner.succeed('Files generated');
 
@@ -147,7 +154,7 @@ export async function generateCommand(options: GenerateOptions): Promise<void> {
     console.log();
     logger.success('Generation complete!');
 
-    result.filesGenerated.forEach(file => {
+    result.filesGenerated.forEach((file: string) => {
       const fileName = basename(file);
       logger.metric(fileName, file);
     });
@@ -171,7 +178,7 @@ export async function generateCommand(options: GenerateOptions): Promise<void> {
       logger.header('Type Mapping Warnings');
 
       const displayWarnings = result.warnings.slice(0, MAX_WARNINGS_DISPLAY);
-      displayWarnings.forEach(w => logger.warn(w));
+      displayWarnings.forEach((warning: string) => logger.warn(warning));
 
       if (result.warnings.length > MAX_WARNINGS_DISPLAY) {
         logger.info(`... and ${result.warnings.length - MAX_WARNINGS_DISPLAY} more warnings`);

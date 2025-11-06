@@ -1,4 +1,4 @@
-import { introspectDatabase } from 'knexbridge-core';
+import { introspectDatabase, type Table, type Column, type ForeignKey } from 'knexbridge-core';
 import { resolve } from 'node:path';
 import { existsSync } from 'node:fs';
 import ora from 'ora';
@@ -38,16 +38,16 @@ export async function introspectCommand(options: IntrospectOptions): Promise<voi
     logger.metric('Total tables', schema.tables.length);
     logger.divider();
 
-    schema.tables.forEach(table => {
+    schema.tables.forEach((table: Table) => {
       console.log();
       logger.info(chalk.bold(table.name));
-      
+
       logger.metric('Columns', table.columns.length);
       logger.metric('Foreign Keys', table.foreign_keys.length);
 
       console.log();
       console.log(chalk.gray('  Columns:'));
-      table.columns.forEach(col => {
+      table.columns.forEach((col: Column) => {
         const nullable = col.nullable ? chalk.gray('NULL') : chalk.yellow('NOT NULL');
         const pk = col.isPrimaryKey ? chalk.cyan(' PK') : '';
         console.log(`    - ${chalk.white(col.name)}: ${chalk.green(col.type)} ${nullable}${pk}`);
@@ -56,7 +56,7 @@ export async function introspectCommand(options: IntrospectOptions): Promise<voi
       if (table.foreign_keys.length > 0) {
         console.log();
         console.log(chalk.gray('  Foreign Keys:'));
-        table.foreign_keys.forEach(fk => {
+        table.foreign_keys.forEach((fk: ForeignKey) => {
           console.log(
             `    - ${chalk.white(fk.columnName)} -> ${chalk.cyan(fk.foreignTableName)}.${chalk.cyan(fk.foreignColumnName)}`
           );

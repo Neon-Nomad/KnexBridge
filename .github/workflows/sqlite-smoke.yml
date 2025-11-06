@@ -2,9 +2,9 @@ name: sqlite-smoke
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   smoke:
@@ -23,13 +23,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install sqlite3 (no-save)
+      - name: Install sqlite3
         run: npm install sqlite3@5 --no-save
 
       - name: Create knexfile
         run: |
-          cat <<'EOF' > knexfile.js
-          /** @type {import('knex').Knex.Config} */
+          cat <<'KNEX' > knexfile.js
           module.exports = {
             development: {
               client: 'sqlite3',
@@ -39,11 +38,19 @@ jobs:
               useNullAsDefault: true,
             },
           };
-          EOF
+          KNEX
 
       - name: Seed SQLite database
         run: |
-          node -e "const sqlite3 = require('sqlite3').verbose(); const db = new sqlite3.Database('./test.db'); db.serialize(() => { db.run('DROP TABLE IF EXISTS users'); db.run('CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL);'); }); db.close();"
+          node - <<'NODE'
+          const sqlite3 = require('sqlite3').verbose();
+          const db = new sqlite3.Database('./test.db');
+          db.serialize(() => {
+            db.run('DROP TABLE IF EXISTS users');
+            db.run('CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL);');
+          });
+          db.close();
+          NODE
 
       - name: Build packages
         run: npm run build
@@ -55,3 +62,4 @@ jobs:
         run: |
           test -f generated/bridge.schema.ts
           test -f generated/bridge.validation.ts
+          test -f generated/index.ts

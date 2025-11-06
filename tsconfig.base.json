@@ -9,7 +9,12 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "baseUrl": "./",
+    "paths": {
+      "knexbridge-core": ["packages/core/src/index.ts"],
+      "knexbridge-core/*": ["packages/core/src/*"]
+    }
   }
 }
 
