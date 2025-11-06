@@ -36,7 +36,7 @@ export function generate(
     if (mergedConfig.generateTypes) {
       typeGenStart = Date.now();
       const typesFile = generateTypesFile(schema, mergedConfig, warnings);
-      const typesPath = join(outDir, 'types.ts');
+      const typesPath = join(outDir, 'bridge.schema.ts');
       writeFileSync(typesPath, typesFile);
       filesGenerated.push(typesPath);
     }
@@ -45,7 +45,7 @@ export function generate(
     if (mergedConfig.generateZod) {
       zodGenStart = Date.now();
       const zodFile = generateZodFile(schema, mergedConfig, warnings);
-      const zodPath = join(outDir, 'schemas.ts');
+      const zodPath = join(outDir, 'bridge.validation.ts');
       writeFileSync(zodPath, zodFile);
       filesGenerated.push(zodPath);
     }
@@ -138,11 +138,11 @@ function generateIndexFile(config: KnexBridgeConfig): string {
   content += '// Do not edit manually\n\n';
 
   if (config.generateTypes) {
-    content += "export * from './types';\n";
+    content += "export * from './bridge.schema';\n";
   }
 
   if (config.generateZod) {
-    content += "export * from './schemas';\n";
+    content += "export * from './bridge.validation';\n";
   }
 
   return content;

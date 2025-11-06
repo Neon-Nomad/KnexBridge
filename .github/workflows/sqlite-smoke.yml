@@ -1,0 +1,64 @@
+name: sqlite-smoke
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install sqlite3 (no-save)
+        run: npm install sqlite3@5 --no-save
+
+      - name: Create knexfile
+        run: |
+          cat <<'EOF' > knexfile.js
+          /** @type {import('knex').Knex.Config} */
+          module.exports = {
+            development: {
+              client: 'sqlite3',
+              connection: {
+                filename: './test.db',
+              },
+              useNullAsDefault: true,
+            },
+          };
+          EOF
+
+      - name: Seed SQLite database
+        run: |
+          node - <<'NODE'
+          const sqlite3 = require('sqlite3').verbose();
+          const db = new sqlite3.Database('./test.db');
+          db.serialize(() => {
+            db.run('DROP TABLE IF EXISTS users');
+            db.run('CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL);');
+          });
+          db.close();
+          NODE
+
+      - name: Build packages
+        run: npm run build
+
+      - name: Run CLI generate command
+        run: node packages/cli/dist/cli.js generate --config ./knexfile.js --out ./generated
+
+      - name: Verify generated outputs
+        run: |
+          test -f generated/bridge.schema.ts
+          test -f generated/bridge.validation.ts

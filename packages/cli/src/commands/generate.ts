@@ -45,6 +45,28 @@ export async function generateCommand(options: GenerateOptions): Promise<void> {
       process.exit(1);
     }
 
+    let knexConfig: any;
+    try {
+      delete require.cache[require.resolve(configPath)];
+      knexConfig = require(configPath);
+    } catch (error) {
+      logger.error(`Failed to load knexfile: ${(error as Error).message}`);
+      process.exit(1);
+    }
+
+    const environmentConfig = knexConfig[options.env];
+    if (!environmentConfig) {
+      logger.error(`Environment "${options.env}" not found in knexfile.`);
+      process.exit(1);
+    }
+
+    const clientName = String(environmentConfig.client || '').toLowerCase();
+    const supportedClients = ['pg', 'mysql', 'mysql2', 'sqlite3', 'better-sqlite3'];
+    if (!supportedClients.includes(clientName)) {
+      logger.error('Client not yet supported in this build.');
+      process.exit(1);
+    }
+
     // Load config file
     const fileConfig = loadConfigFile(options.configFile);
 

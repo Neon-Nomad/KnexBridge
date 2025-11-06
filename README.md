@@ -1,145 +1,99 @@
-<p align="center">
-  <img src="./images/32457535-f911-4ba2-9579-4818e7eedc27.png" alt="KnexBridge Logo" width="500">
-</p>
+# KnexBridge
 
-<h3 align="center">Generate Types. Validate Everything.</h3>
+## Generate Types. Validate Everything.
 
----
+![KnexBridge Hero](./images/readme1.png)
 
-## Overview
+KnexBridge bridges relational databases and TypeScript applications by introspecting your schema, generating fully typed models, and producing runtime validation assets. It is designed for teams that rely on Knex.js for migrations and queries but want stronger guarantees across API layers, services, and front-end clients.
 
-KnexBridge is an open-source TypeScript toolchain that bridges your database and codebase. It introspects your Knex database and automatically generates:
+![KnexBridge Architecture](./images/readme3.png)
+![KnexBridge Code Example](./images/readme2.png)
 
-- Strongly typed TypeScript interfaces
-- Validation-ready Zod schemas
-- Typed Insert and Update variants
-- A CLI that integrates seamlessly into your workflow
+## Introduction
+KnexBridge automates the path from database schema to application code. By combining schema introspection, naming strategies, and template-driven code generation, it delivers TypeScript interfaces, insert/update helpers, and Zod validators that stay accurate with every migration. Engineers, data teams, and API builders who work with Knex.js can integrate it into CI pipelines or run it on demand from the CLI.
 
----
+## Features
+- Database introspection for SQLite today, with PostgreSQL, MySQL, and SQL Server on the roadmap.
+- TypeScript interface generation with configurable naming strategies and relation helpers.
+- Automatic Zod schema creation for request validation and shared contracts.
+- Insert and update helper types that respect excluded columns and defaults.
+- Customizable type mappings and surfacing of warnings for unmapped columns.
+- CLI workflow with progress reporting, metrics, and optional configuration files.
 
-## How It Works
-
-<p align="center">
-  <img src="./images/b3c897bd-d4e0-44f6-9754-5dd6930eb66d.png" alt="KnexBridge Workflow" width="650">
-</p>
-
-KnexBridge connects your database schema to your TypeScript application, generating the types and schemas you need for consistent, type-safe development.
-
-```
-npx knexbridge generate --config knexfile.js --out ./generated
-```
-
-## Repository Structure
-
-knexbridge/
-- package.json
-- tsconfig.json
-- turbo.json
-- README.md
-- packages/
-  - core/
-    - package.json
-    - tsconfig.json
-    - src/
-      - index.ts
-      - types.ts
-      - constants.ts
-      - errors.ts
-      - introspect.ts
-      - generator.ts
-      - generate.ts
-  - cli/
-    - package.json
-    - tsconfig.json
-    - src/
-      - cli.ts
-      - index.ts
-      - commands/
-        - generate.ts
-        - introspect.ts
-      - utils/
-        - config.ts
-        - logger.ts
+## Installation
+`ash
+npm install --save-dev @knexbridge/cli
+`
 
 ## Quick Start
-
-Install dependencies
-```
-npm install
-```
-
-Build all packages
-```
-npm run build
-```
-
-Run the CLI
-```
-npx knexbridge generate --config knexfile.js --out ./generated
-```
+1. Create a knexfile.js describing your Knex environments:
+`javascript
+/** @type {import('knex').Knex.Config} */
+module.exports = {
+  development: {
+    client: 'sqlite3',
+    connection: {
+      filename: './dev.sqlite',
+    },
+    useNullAsDefault: true,
+  },
+};
+`
+2. Generate code into a target folder:
+`ash
+npx knexbridge generate --config ./knexfile.js --env development --out ./generated
+`
+3. Import the generated modules from your application:
+`	ypescript
+import { bridge } from './generated';
+`
 
 ## Example Output
-
-From this schema:
-
-```
-CREATE TABLE users (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  username TEXT NOT NULL,
-  email TEXT,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-```
-
-KnexBridge generates:
-
-```ts
+`	ypescript
+// generated/bridge.schema.ts
 export interface User {
   id: number;
   username: string;
   email?: string | null;
-  created_at: string;
+  createdAt: Date;
 }
+
+export type UserInsert = Pick<User, 'username' | 'email'>;
+export type UserUpdate = Partial<Pick<User, 'username' | 'email'>>;
+`
+`	ypescript
+// generated/bridge.validation.ts
+import { z } from 'zod';
 
 export const UserSchema = z.object({
   id: z.number(),
-  username: z.string(),
-  email: z.string().nullable(),
-  created_at: z.string(),
+  username: z.string().min(1),
+  email: z.string().email().nullable(),
+  createdAt: z.date(),
 });
-```
-
-## Configuration
-
-KnexBridge supports .knexbridgerc, knexbridge.config.json, or direct CLI flags.
-
-Example configuration:
-
-```json
-{
-  "generateTypes": true,
-  "generateZod": true,
-  "generateInsertTypes": true,
-  "generateUpdateTypes": true,
-  "namingStrategy": "pascal",
-  "tableNameFormat": "singular",
-  "dateStrategy": "string",
-  "useBigInt": true
-}
-```
+`
 
 ## Development
-
-Type check
-```
+`ash
+npm install
 npm run build
-```
+npm run test
+`
+- 
+pm run build compiles the core and CLI packages.
+- 
+pm run test performs type-level smoke tests across the workspace.
+
+## Roadmap
+- Add PostgreSQL, MySQL, and SQL Server dialect support with driver autodetection.
+- Generate relation-aware helper functions and query builders.
+- Provide plugin hooks for custom template outputs (tRPC, OpenAPI, etc.).
+- Publish official VS Code snippets and typed SDK examples.
+
+## Contributing
+Contributions are welcome. Open an issue to discuss ideas or submit a pull request with tests and documentation updates.
 
 ## License
+Licensed under the [MIT License](./LICENSE).
 
-This project is licensed under the MIT License.
-
-<p align="center">
-  <img src="./images/5cb385b3-b716-45e2-ab10-4f5a1c278b5c.png" alt="KnexBridge Banner" width="600">
-</p>
-
+![KnexBridge Footer](./images/readme4.png)
