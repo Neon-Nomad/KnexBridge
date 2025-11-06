@@ -1,6 +1,6 @@
 # KnexBridge
 
-[![SQLite Smoke Tests](https://github.com/Neon-Nomad/KnexBridge/actions/workflows/sqlite-smoke.yml/badge.svg)](https://github.com/Neon-Nomad/KnexBridge/actions/workflows/sqlite-smoke.yml) [![npm version](https://img.shields.io/npm/v/knexbridge.svg)](https://www.npmjs.com/package/knexbridge) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![OpenSSF Best Practices](https://img.shields.io/badge/OpenSSF%20Best%20Practices-in%20progress-lightgrey.svg)](https://bestpractices.dev/en/projects)
+[![SQLite Smoke Tests](https://github.com/Neon-Nomad/KnexBridge/actions/workflows/sqlite-smoke.yml/badge.svg)](https://github.com/Neon-Nomad/KnexBridge/actions/workflows/sqlite-smoke.yml) [![PostgreSQL Smoke Tests](https://github.com/Neon-Nomad/KnexBridge/actions/workflows/postgres-smoke.yml/badge.svg)](https://github.com/Neon-Nomad/KnexBridge/actions/workflows/postgres-smoke.yml) [![npm version](https://img.shields.io/npm/v/knexbridge.svg)](https://www.npmjs.com/package/knexbridge) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![OpenSSF Best Practices](https://img.shields.io/badge/OpenSSF%20Best%20Practices-in%20progress-lightgrey.svg)](https://bestpractices.dev/en/projects)
 
 ## Generate Types. Validate Everything.
 
@@ -177,4 +177,5 @@ All contributors are expected to follow the [Contributor Covenant Code of Conduc
 
 ## License
 Licensed under the [MIT License](./LICENSE).
+
 
