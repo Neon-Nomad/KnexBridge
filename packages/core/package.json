@@ -1,6 +1,6 @@
 {
   "name": "knexbridge-core",
-  "version": "0.22.1",
+  "version": "0.22.2",
   "description": "Core library to introspect Knex databases and generate TypeScript types and Zod schemas.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

@@ -80,6 +80,13 @@ export const UserSchema = z.object({
 });
 ```
 
+### Verified Demo
+✅ Tested on Node 18+ with SQLite using:
+```bash
+npm install --save-dev knexbridge knexbridge-core
+npx knexbridge generate --config ./knexfile.js --out ./generated
+```
+
 ## Development
 ```bash
 npm install

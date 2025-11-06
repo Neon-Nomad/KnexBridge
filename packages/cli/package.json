@@ -1,6 +1,6 @@
 {
     "name": "knexbridge",
-    "version": "0.22.1",
+    "version": "0.22.2",
     "description": "CLI to generate TypeScript types and Zod schemas from your Knex.js database.",
     "type": "module",
     "main": "dist/index.js",
@@ -32,7 +32,7 @@
     "dependencies": {
         "chalk": "^5.3.0",
         "commander": "^11.1.0",
-        "knexbridge-core": "^0.22.1",
+        "knexbridge-core": "^0.22.2",
         "ora": "^6.3.1"
     },
     "devDependencies": {
