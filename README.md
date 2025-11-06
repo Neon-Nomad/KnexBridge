@@ -1,6 +1,6 @@
 # KnexBridge
 
-[![SQLite Smoke Tests](https://github.com/Neon-Nomad/KnexBridge/actions/workflows/sqlite-smoke.yml/badge.svg)](https://github.com/Neon-Nomad/KnexBridge/actions/workflows/sqlite-smoke.yml) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![OpenSSF Best Practices](https://img.shields.io/badge/OpenSSF%20Best%20Practices-in%20progress-lightgrey.svg)](https://bestpractices.dev/en/projects)
+[![SQLite Smoke Tests](https://github.com/Neon-Nomad/KnexBridge/actions/workflows/sqlite-smoke.yml/badge.svg)](https://github.com/Neon-Nomad/KnexBridge/actions/workflows/sqlite-smoke.yml) [![npm version](https://img.shields.io/npm/v/knexbridge.svg)](https://www.npmjs.com/package/knexbridge) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![OpenSSF Best Practices](https://img.shields.io/badge/OpenSSF%20Best%20Practices-in%20progress-lightgrey.svg)](https://bestpractices.dev/en/projects)
 
 ## Generate Types. Validate Everything.
 
@@ -15,7 +15,7 @@ KnexBridge bridges relational databases and TypeScript applications by introspec
 KnexBridge automates the path from database schema to application code. By combining schema introspection, naming strategies, and template-driven code generation, it delivers TypeScript interfaces, insert/update helpers, and Zod validators that stay accurate with every migration. Engineers, data teams, and API builders who work with Knex.js can integrate it into CI pipelines or run it on demand from the CLI.
 
 ## Features
-- Database introspection for SQLite today, with PostgreSQL, MySQL, and SQL Server on the roadmap.
+- Database introspection for SQLite, PostgreSQL, and MySQL today (SQL Server on the roadmap).
 - TypeScript interface generation with configurable naming strategies and relation helpers.
 - Automatic Zod schema creation for request validation and shared contracts.
 - Insert and update helper types that respect excluded columns and defaults.
@@ -23,15 +23,15 @@ KnexBridge automates the path from database schema to application code. By combi
 - CLI workflow with progress reporting, metrics, and optional configuration files.
 
 ## Installation
-```bash
+`ash
 npm install --save-dev knexbridge
 npm install knexbridge-core
-```
+`
 
 ## Quick Start
-1. Create a `knexfile.js` describing your Knex environments:
+1. Create a knexfile.js describing your Knex environments:
 
-   ```javascript
+   `javascript
    /** @type {import('knex').Knex.Config} */
    module.exports = {
      development: {
@@ -42,22 +42,22 @@ npm install knexbridge-core
        useNullAsDefault: true,
      },
    };
-   ```
+   `
 
 2. Generate code into a target folder:
 
-   ```bash
+   `ash
    npx knexbridge generate --config ./knexfile.js --env development --out ./generated
-   ```
+   `
 
 3. Import the generated modules from your application:
 
-   ```typescript
+   `	ypescript
    import { bridge } from './generated';
-   ```
+   `
 
 ## Example Output
-```typescript
+`	ypescript
 // generated/bridge.schema.ts
 export interface User {
   id: number;
@@ -68,9 +68,9 @@ export interface User {
 
 export type UserInsert = Pick<User, 'username' | 'email'>;
 export type UserUpdate = Partial<Pick<User, 'username' | 'email'>>;
-```
+`
 
-```typescript
+`	ypescript
 // generated/bridge.validation.ts
 import { z } from 'zod';
 
@@ -80,23 +80,25 @@ export const UserSchema = z.object({
   email: z.string().email().nullable(),
   createdAt: z.date(),
 });
-```
+`
 
 ### Verified Demo
-✅ Tested on Node 18+ with SQLite using:
-```bash
-npm install --save-dev knexbridge knexbridge-core
-npx knexbridge generate --config ./knexfile.js --out ./generated
-```
+- ? Tested on Node 18+ with SQLite using:
+  `ash
+  npm install --save-dev knexbridge knexbridge-core
+  npx knexbridge generate --config ./knexfile.js --out ./generated
+  `
 
 ## Development
-```bash
+`ash
 npm install
 npm run build
 npm run test
-```
-- `npm run build` compiles the core and CLI packages.
-- `npm run test` performs type-level smoke tests across the workspace.
+`
+- 
+pm run build compiles the core and CLI packages.
+- 
+pm run test performs type-level smoke tests across the workspace.
 
 ## Roadmap
 - Add PostgreSQL, MySQL, and SQL Server dialect support with driver autodetection.
@@ -112,53 +114,53 @@ All contributors are expected to follow the [Contributor Covenant Code of Conduc
 ### Getting Started
 1. **Fork and Clone**
 
-   ```bash
+   `ash
    git clone https://github.com/<your-username>/KnexBridge.git
    cd KnexBridge
    npm install
-   ```
+   `
 
 2. **Build the Packages**
 
-   ```bash
+   `ash
    npm run build
-   ```
+   `
 
 3. **Run the CLI Locally**
 
-   ```bash
+   `ash
    node packages/cli/dist/cli.js generate --config ./knexfile.js --out ./generated
-   ```
+   `
 
 4. **Test**
 
    Run all tests before submitting changes:
 
-   ```bash
+   `ash
    npm test
-   ```
+   `
 
 ### Branching & Commits
 - Create a new branch for each change:
 
-  ```bash
+  `ash
   git checkout -b feature/add-postgres-support
-  ```
+  `
 
-- Use conventional commits (`feat:`, `fix:`, `chore:`, `docs:`).
+- Use conventional commits (eat:, ix:, chore:, docs:).
 - Keep commits atomic and messages clear.
 
 ### Pull Requests
 - Ensure your code builds with no TypeScript errors.
 - Run linting before pushing:
 
-  ```bash
+  `ash
   npm run lint
-  ```
+  `
 
 - Include tests for new features.
 - Update documentation (README, comments, etc.) when behavior changes.
-- Open a PR against the `main` branch and describe why the change matters.
+- Open a PR against the main branch and describe why the change matters.
 
 ### Issue Guidelines
 - **Bug reports:** include reproduction steps, environment details, and relevant logs.
@@ -167,12 +169,11 @@ All contributors are expected to follow the [Contributor Covenant Code of Conduc
 
 ### Development Notes
 - Node.js >= 18.18.0 is required.
-- Linting configuration lives in `.eslintrc.json`.
-- Core logic is under `packages/core/src/`.
-- CLI code lives in `packages/cli/src/`.
+- Linting configuration lives in .eslintrc.json.
+- Core logic is under packages/core/src/.
+- CLI code lives in packages/cli/src/.
 
 ![KnexBridge Footer](./images/readme4.png)
 
 ## License
 Licensed under the [MIT License](./LICENSE).
-
