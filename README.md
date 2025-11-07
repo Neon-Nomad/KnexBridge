@@ -6,6 +6,8 @@
 
 ![KnexBridge Hero](./images/readme1.png)
 
+Featured on Awesome JavaScript
+
 KnexBridge bridges relational databases and TypeScript applications by introspecting your schema, generating fully typed models, and producing runtime validation assets. It is designed for teams that rely on Knex.js for migrations and queries but want stronger guarantees across API layers, services, and front-end clients.
 
 ![KnexBridge Architecture](./images/readme3.png)
