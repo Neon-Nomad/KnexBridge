@@ -1,16 +1,6 @@
 # KnexBridge
 
-[![SQLite Smoke Tests](https://github.com/Neon-Nomad/KnexBridge/actions/workflows/sqlite-smoke.yml/badge.svg)](https://github.com/Neon-Nomad/KnexBridge/actions/workflows/sqlite-smoke.yml)
-[![PostgreSQL Smoke Tests](https://github.com/Neon-Nomad/KnexBridge/actions/workflows/postgres-smoke.yml/badge.svg)](https://github.com/Neon-Nomad/KnexBridge/actions/workflows/postgres-smoke.yml)
-[![Coverage](https://codecov.io/gh/Neon-Nomad/KnexBridge/branch/main/graph/badge.svg)](https://codecov.io/gh/Neon-Nomad/KnexBridge)
-[![npm version](https://img.shields.io/npm/v/knexbridge.svg)](https://www.npmjs.com/package/knexbridge)
-[![npm downloads](https://img.shields.io/npm/dm/knexbridge.svg)](https://www.npmjs.com/package/knexbridge)
-[![Node support](https://img.shields.io/node/v/knexbridge.svg)](https://www.npmjs.com/package/knexbridge)
-[![Install size](https://packagephobia.com/badge?p=knexbridge)](https://packagephobia.com/result?p=knexbridge)
-[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/Neon-Nomad/KnexBridge/badge)](https://securityscorecards.dev/viewer/?uri=github.com/Neon-Nomad/KnexBridge)
-[![OpenSSF Best Practices](https://img.shields.io/badge/OpenSSF%20Best%20Practices-in%20progress-lightgrey.svg)](https://bestpractices.dev/en/projects)
-[![Latest release](https://img.shields.io/github/v/release/Neon-Nomad/KnexBridge?sort=semver)](https://github.com/Neon-Nomad/KnexBridge/releases)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![SQLite Smoke Tests](https://github.com/Neon-Nomad/KnexBridge/actions/workflows/sqlite-smoke.yml/badge.svg)](https://github.com/Neon-Nomad/KnexBridge/actions/workflows/sqlite-smoke.yml) [![PostgreSQL Smoke Tests](https://github.com/Neon-Nomad/KnexBridge/actions/workflows/postgres-smoke.yml/badge.svg)](https://github.com/Neon-Nomad/KnexBridge/actions/workflows/postgres-smoke.yml) [![Coverage](https://codecov.io/gh/Neon-Nomad/KnexBridge/branch/main/graph/badge.svg)](https://codecov.io/gh/Neon-Nomad/KnexBridge) [![npm version](https://img.shields.io/npm/v/knexbridge.svg)](https://www.npmjs.com/package/knexbridge) [![npm downloads](https://img.shields.io/npm/dm/knexbridge.svg)](https://www.npmjs.com/package/knexbridge) [![Node support](https://img.shields.io/node/v/knexbridge.svg)](https://www.npmjs.com/package/knexbridge) [![Install size](https://packagephobia.com/badge?p=knexbridge)](https://packagephobia.com/result?p=knexbridge) [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/Neon-Nomad/KnexBridge/badge)](https://securityscorecards.dev/viewer/?uri=github.com/Neon-Nomad/KnexBridge) [![OpenSSF Best Practices](https://img.shields.io/badge/OpenSSF%20Best%20Practices-in%20progress-lightgrey.svg)](https://bestpractices.dev/en/projects) [![Latest release](https://img.shields.io/github/v/release/Neon-Nomad/KnexBridge?sort=semver)](https://github.com/Neon-Nomad/KnexBridge/releases) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ## Generate Types. Validate Everything.
 
